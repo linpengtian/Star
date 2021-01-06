@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -23,65 +22,97 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.view.View.MeasureSpec;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int PERMISSION_REQUEST_CODE = 1001;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+    private static final int REQUEST_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ScreenshotManager.INSTANCE.requestScreenshotPermission(MainActivity.this, REQUEST_ID);
+
         if (!checkPermission()) {
-            takeScreenshot();
+            startTakeScreenshot();
         } else {
             if (checkPermission()) {
                 requestPermissionAndContinue();
             } else {
-                takeScreenshot();
+                startTakeScreenshot();
             }
         }
 
-        takeScreenshot();
     }
 
-    public void onStart(View view) {
-        takeScreenshot();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ID)
+            ScreenshotManager.INSTANCE.onActivityResult(resultCode, data);
     }
 
-    private void takeScreenshot() {
-        Date now = new Date();
-        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-
-        try {
-            // image naming and path  to include sd card  appending name you choose for file
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + s + ".jpg";
-
-            // create bitmap screen capture
-            View v1 = getWindow().getDecorView().getRootView();
-            v1.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(v1.getWidth(), v1.getHeight(), Bitmap.Config.ARGB_8888);
-            v1.setDrawingCacheEnabled(false);
-
-            File imageFile = new File(mPath);
-
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-
-//            openScreenshot(imageFile);
-        } catch (Throwable e) {
-            // Several error may come out with file handling or DOM
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Failed screenshot", Toast.LENGTH_LONG);
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
+
+
+    private void startTakeScreenshot() {
+
+        Timer timer = new Timer();
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            public void run() {
+                ScreenshotManager.INSTANCE.test(MainActivity.this);
+            }
+
+        }, 3000, 60000);
+    }
+
+//    private void takeScreenshot() {
+//        Date now = new Date();
+//        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+//
+//        try {
+//            // image naming and path  to include sd card  appending name you choose for file
+//            String mPath = Environment.getExternalStorageDirectory().toString() + "/screens/" + s + ".jpg";
+//
+//            // create bitmap screen capture
+//            View v = findViewById(android.R.id.content).getRootView();
+//            v.setDrawingCacheEnabled(true);
+//            v.measure(MeasureSpec.makeMeasureSpec(v.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(v.getHeight(), MeasureSpec.EXACTLY));
+//            v.layout((int) v.getX(), (int) v.getY(), (int) v.getX() + v.getMeasuredWidth(), (int) v.getY() + v.getMeasuredHeight());
+//
+//            v.buildDrawingCache(true);
+//
+//            Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());
+//            v.setDrawingCacheEnabled(false);
+//
+//            File imageFile = new File(mPath);
+//
+//            FileOutputStream outputStream = new FileOutputStream(imageFile);
+//            int quality = 100;
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+//            outputStream.flush();
+//            outputStream.close();
+//
+//            Log.e("=======", "============");
+//
+//        } catch (Throwable e) {
+//            // Several error may come out with file handling or DOM
+//            e.printStackTrace();
+//            Toast.makeText(getApplicationContext(), "Failed screenshot", Toast.LENGTH_LONG);
+//        }
+//    }
 
     private boolean checkPermission() {
 
@@ -98,8 +129,6 @@ public class MainActivity extends AppCompatActivity {
                     && ActivityCompat.shouldShowRequestPermissionRationale(this, READ_EXTERNAL_STORAGE)) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setCancelable(true);
-//                alertBuilder.setTitle(getString(R.string.permission_necessary));
-//                alertBuilder.setMessage(R.string.storage_permission_is_encessary_to_wrote_event);
                 alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                     public void onClick(DialogInterface dialog, int which) {
@@ -115,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
             }
         } else {
-            takeScreenshot();
+            startTakeScreenshot();
         }
     }
 
@@ -142,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 if (flag) {
-                    takeScreenshot();
+                    startTakeScreenshot();
                 } else {
                     finish();
                 }
