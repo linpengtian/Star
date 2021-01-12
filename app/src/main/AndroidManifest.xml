@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jds.star">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
@@ -21,7 +23,22 @@
             </intent-filter>
         </activity>
 
-        <service android:name = ".service"/>
+        <service android:name=".MyService" android:label="My Service">
+            <intent-filter>
+                <action android:name="com.myapp.MyService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".StartMyServiceAtBootReceiver"
+            android:label="StartMyServiceAtBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

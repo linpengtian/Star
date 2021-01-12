@@ -10,21 +10,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import android.view.View.MeasureSpec;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -55,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ID)
             ScreenshotManager.INSTANCE.onActivityResult(resultCode, data);
     }
@@ -67,15 +61,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTakeScreenshot() {
 
-        Timer timer = new Timer();
 
-        timer.scheduleAtFixedRate(new TimerTask() {
 
-            public void run() {
-                ScreenshotManager.INSTANCE.test(MainActivity.this);
-            }
-
-        }, 3000, 60000);
+        Intent serviceIntent = new Intent(MainActivity.this, MyService.class);
+        startService(serviceIntent);
+//        Timer timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//
+//            public void run() {
+//                ScreenshotManager.INSTANCE.test(MainActivity.this);
+//            }
+//
+//        }, 3000, 60000);
     }
 
 //    private void takeScreenshot() {

@@ -30,13 +30,15 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.InvalidParameterException;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
-public class service extends Service {
+public class MyService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("service", "Service created.");
+        Log.e("service", "====Service created.====");
     }
 
     @Override
@@ -46,6 +48,7 @@ public class service extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("service", "====Service started by user.====");
         Toast.makeText(this, "Service started by user.", Toast.LENGTH_SHORT).show();
 
         takeScreenshot();
@@ -55,38 +58,20 @@ public class service extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.e("service", "==== Service destroyed by user. ====");
         Toast.makeText(this, "Service destroyed by user.", Toast.LENGTH_LONG).show();
     }
 
     private void takeScreenshot() {
-//        Date now = new Date();
-//        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-//
-//        try {
-//            // image naming and path  to include sd card  appending name you choose for file
-//            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + s + ".jpg";
-//
-//            // create bitmap screen capture
-//
-//            View v1 = activity.getWindow().getDecorView().getRootView();
-//            v1.setDrawingCacheEnabled(true);
-//            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-//            v1.setDrawingCacheEnabled(false);
-//
-//            File imageFile = new File(mPath);
-//
-//            FileOutputStream outputStream = new FileOutputStream(imageFile);
-//            int quality = 100;
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-//
-////            openScreenshot(imageFile);
-//        } catch (Throwable e) {
-//            // Several error may come out with file handling or DOM
-//            e.printStackTrace();
-//            Toast.makeText(getApplicationContext(), "Failed screenshot", Toast.LENGTH_LONG);
-//        }
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            public void run() {
+                ScreenshotManager.INSTANCE.test(getApplicationContext());
+            }
+
+        }, 3000, 60000);
+//        ScreenshotManager.INSTANCE.test(getApplicationContext());
     }
 
 }

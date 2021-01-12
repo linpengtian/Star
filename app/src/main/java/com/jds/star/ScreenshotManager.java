@@ -16,11 +16,10 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -29,8 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ScreenshotManager {
     private static final String SCREENCAP_NAME = "screencap";
@@ -55,13 +52,22 @@ public class ScreenshotManager {
 
     public void test(@NonNull Context context) {
 
-        final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                takeScreenshot(context);
-            }
-        }, 3000);
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        boolean isInteractive = pm.isInteractive();
+
+        if (isInteractive) {
+            Log.e("========", "==== interactive on =====");
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    takeScreenshot(context);
+                }
+            }, 3000);
+        } else {
+            Log.e("========", "==== interactive off =====");
+        }
+
     }
 
     @UiThread
