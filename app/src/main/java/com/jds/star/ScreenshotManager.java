@@ -129,6 +129,11 @@ public class ScreenshotManager {
 
                         try {
                             // image naming and path  to include sd card  appending name you choose for file
+                            File directory = new File(Environment.getExternalStorageDirectory()+File.separator+"screens");
+                            if (!directory.exists()) {
+                                directory.mkdirs();
+                            }
+
                             String mPath = Environment.getExternalStorageDirectory().toString() + "/screens/" + s + ".jpg";
 
                             File imageFile = new File(mPath);

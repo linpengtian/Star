@@ -15,15 +15,20 @@
         android:theme="@style/Theme.Star">
 
         <activity android:name=".MainActivity"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:directBootAware="true"
+            android:launchMode="singleTop"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
 
-        <service android:name="com.jds.star.MyService" android:label="My Service">
+        <service android:name="com.jds.star.MyService" android:label="My Service" android:directBootAware="true">
             <intent-filter>
                 <action android:name="com.myapp.MyService" />
             </intent-filter>

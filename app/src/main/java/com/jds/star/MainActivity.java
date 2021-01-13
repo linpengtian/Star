@@ -33,11 +33,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        File directory = new File(Environment.getExternalStorageDirectory()+File.separator+"screens");
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
         ScreenshotManager.INSTANCE.requestScreenshotPermission(MainActivity.this, REQUEST_ID);
 
         if (!checkPermission()) {
@@ -49,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 startTakeScreenshot();
             }
         }
+
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
