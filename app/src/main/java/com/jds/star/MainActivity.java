@@ -9,6 +9,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +20,7 @@ import android.util.Log;
 import java.io.File;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
+        filter.addAction(Intent.ACTION_LOCKED_BOOT_COMPLETED);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        StartAppOnBootReceiver receiver = new StartAppOnBootReceiver();
+        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -64,9 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void startTakeScreenshot() {
-
-
-
         Intent serviceIntent = new Intent(MainActivity.this, MyService.class);
         startService(serviceIntent);
     }
@@ -75,22 +80,24 @@ public class MainActivity extends AppCompatActivity {
 
         return ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                ;
+                && ContextCompat.checkSelfPermission(this, RECEIVE_BOOT_COMPLETED) != PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissionAndContinue() {
         if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, RECEIVE_BOOT_COMPLETED) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, WRITE_EXTERNAL_STORAGE)
-                    && ActivityCompat.shouldShowRequestPermissionRationale(this, READ_EXTERNAL_STORAGE)) {
+                    && ActivityCompat.shouldShowRequestPermissionRationale(this, READ_EXTERNAL_STORAGE)
+                    && ActivityCompat.shouldShowRequestPermissionRationale(this, RECEIVE_BOOT_COMPLETED)) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setCancelable(true);
                 alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(MainActivity.this, new String[]{WRITE_EXTERNAL_STORAGE
-                                , READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                                , READ_EXTERNAL_STORAGE, RECEIVE_BOOT_COMPLETED}, PERMISSION_REQUEST_CODE);
                     }
                 });
                 AlertDialog alert = alertBuilder.create();
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("", "permission denied, show dialog");
             } else {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{WRITE_EXTERNAL_STORAGE,
-                        READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                        READ_EXTERNAL_STORAGE, RECEIVE_BOOT_COMPLETED}, PERMISSION_REQUEST_CODE);
             }
         } else {
             startTakeScreenshot();

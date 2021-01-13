@@ -125,7 +125,7 @@ public class ScreenshotManager {
                         super.onPostExecute(bitmap);
 
                         Date now = new Date();
-                        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+                        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_HH:mm:ss", now);
 
                         try {
                             // image naming and path  to include sd card  appending name you choose for file
