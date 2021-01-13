@@ -71,7 +71,6 @@ public class MyService extends Service {
             }
 
         }, 3000, 60000);
-//        ScreenshotManager.INSTANCE.test(getApplicationContext());
     }
 
 }

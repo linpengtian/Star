@@ -13,11 +13,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -31,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        File directory = new File(Environment.getExternalStorageDirectory()+File.separator+"screens");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
         ScreenshotManager.INSTANCE.requestScreenshotPermission(MainActivity.this, REQUEST_ID);
 
@@ -65,51 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent serviceIntent = new Intent(MainActivity.this, MyService.class);
         startService(serviceIntent);
-//        Timer timer = new Timer();
-//        timer.scheduleAtFixedRate(new TimerTask() {
-//
-//            public void run() {
-//                ScreenshotManager.INSTANCE.test(MainActivity.this);
-//            }
-//
-//        }, 3000, 60000);
     }
-
-//    private void takeScreenshot() {
-//        Date now = new Date();
-//        CharSequence s = android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-//
-//        try {
-//            // image naming and path  to include sd card  appending name you choose for file
-//            String mPath = Environment.getExternalStorageDirectory().toString() + "/screens/" + s + ".jpg";
-//
-//            // create bitmap screen capture
-//            View v = findViewById(android.R.id.content).getRootView();
-//            v.setDrawingCacheEnabled(true);
-//            v.measure(MeasureSpec.makeMeasureSpec(v.getWidth(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(v.getHeight(), MeasureSpec.EXACTLY));
-//            v.layout((int) v.getX(), (int) v.getY(), (int) v.getX() + v.getMeasuredWidth(), (int) v.getY() + v.getMeasuredHeight());
-//
-//            v.buildDrawingCache(true);
-//
-//            Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());
-//            v.setDrawingCacheEnabled(false);
-//
-//            File imageFile = new File(mPath);
-//
-//            FileOutputStream outputStream = new FileOutputStream(imageFile);
-//            int quality = 100;
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-//
-//            Log.e("=======", "============");
-//
-//        } catch (Throwable e) {
-//            // Several error may come out with file handling or DOM
-//            e.printStackTrace();
-//            Toast.makeText(getApplicationContext(), "Failed screenshot", Toast.LENGTH_LONG);
-//        }
-//    }
 
     private boolean checkPermission() {
 
