@@ -1,2 +1,4 @@
 app/release
 build
+.idea
+.gradle
